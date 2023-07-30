@@ -10,7 +10,7 @@ pub struct JavascriptAnalyser {
 
 impl Display for JavascriptAnalyser {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        return self.inner.fmt(f);
+        self.inner.fmt(f)
     }
 }
 

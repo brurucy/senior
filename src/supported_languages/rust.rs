@@ -13,7 +13,7 @@ pub struct RustAnalyzer {
 
 impl Display for RustAnalyzer {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        return self.inner.fmt(f);
+        self.inner.fmt(f)
     }
 }
 
@@ -100,6 +100,18 @@ impl Greeter {
     }
 }
 
+// A struct with a method named in the same way as the top-level function
+struct GenericGreeter<T> {
+    name: T,
+}
+
+impl<T: std::fmt::Display> GenericGreeter<T> {
+    // Method in the struct
+    fn greet(&self) {
+        println!("Hello from {}, inside the GenericGreeter struct!", self.name);
+    }
+}
+
 fn main() {
     // Call the top-level function
     greet();
@@ -109,8 +121,7 @@ fn main() {
         name: String::from("Alice"),
     };
     greeter.greet();
-}
-"#;
+}"#;
 
     fn rust_source_tree() -> Tree {
         parse_source_with_language(RUST_SOURCE, tree_sitter_rust::language())
@@ -158,5 +169,17 @@ fn main() {
     }
 
     #[test]
-    fn method_under_parent_with_generics() {}
+    fn method_under_parent_with_generics() {
+        let target = r#"fn greet(&self) {
+        println!("Hello from {}, inside the GenericGreeter struct!", self.name);
+    }"#;
+
+        let tree = rust_source_tree();
+        let ra: RustAnalyzer = Default::default();
+
+        assert_eq!(
+            target,
+            node_value(RUST_SOURCE, ra.find_correct_node(RUST_SOURCE, &tree, Some("GenericGreeter"), Some("greet")).unwrap()),
+        )
+    }
 }
