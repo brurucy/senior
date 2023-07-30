@@ -24,35 +24,43 @@ impl Display for GoAnalyser {
 }
 
 impl SupportedLanguage for GoAnalyser {
-    fn find_correct_node<'a>(&self, source_file: &str, root_tree: &'a Tree, parent_identifier: Option<&str>, function_identifier: Option<&str>) -> Result<Node<'a>, &'a str> {
+    fn find_correct_node<'a>(
+        &self,
+        source_file: &str,
+        root_tree: &'a Tree,
+        parent_identifier: Option<&str>,
+        function_identifier: Option<&str>,
+    ) -> Result<Node<'a>, &'a str> {
         if let Some(function) = function_identifier {
             return if let Some(parent) = parent_identifier {
                 let all_method_decls = find_all_of_kind(root_tree.walk(), "method_declaration");
 
-                let candidate_function_node = all_method_decls
-                    .into_iter()
-                    .find(|method_decl| {
-                        let method_name = node_value(source_file, method_decl.child_by_field_name("name").unwrap());
+                let candidate_function_node = all_method_decls.into_iter().find(|method_decl| {
+                    let method_name = node_value(
+                        source_file,
+                        method_decl.child_by_field_name("name").unwrap(),
+                    );
 
-                        let receiver_node = method_decl.child_by_field_name("receiver").unwrap();
+                    let receiver_node = method_decl.child_by_field_name("receiver").unwrap();
 
-                        // method receiver nodes only have one argument, a single parameter declaration
-                        let parameter_declaration_node = receiver_node.child(1).unwrap();
+                    // method receiver nodes only have one argument, a single parameter declaration
+                    let parameter_declaration_node = receiver_node.child(1).unwrap();
 
-                        // It always has a type
-                        let receiver_type = parameter_declaration_node
-                            .child_by_field_name("type")
-                            .unwrap();
+                    // It always has a type
+                    let receiver_type = parameter_declaration_node
+                        .child_by_field_name("type")
+                        .unwrap();
 
-                        // That can either be a pointer, or not
-                        return if receiver_type.kind() == "type_identifier" {
-                            node_value(source_file, receiver_type) == parent && method_name == function
-                        } else {
-                            let pointer_receiver_type = receiver_type.child(1).unwrap();
+                    // That can either be a pointer, or not
+                    return if receiver_type.kind() == "type_identifier" {
+                        node_value(source_file, receiver_type) == parent && method_name == function
+                    } else {
+                        let pointer_receiver_type = receiver_type.child(1).unwrap();
 
-                            node_value(source_file, pointer_receiver_type) == parent && method_name == function
-                        };
-                    });
+                        node_value(source_file, pointer_receiver_type) == parent
+                            && method_name == function
+                    };
+                });
 
                 if let Some(function_node) = candidate_function_node {
                     return Ok(function_node);
@@ -62,13 +70,14 @@ impl SupportedLanguage for GoAnalyser {
             } else {
                 let all_functions = find_all_of_kind(root_tree.walk(), "function_declaration");
 
-                if let Some(function_node) = all_functions
-                    .into_iter()
-                    .find(|function_decl| {
-                        let function_name = node_value(source_file, function_decl.child_by_field_name("name").unwrap());
+                if let Some(function_node) = all_functions.into_iter().find(|function_decl| {
+                    let function_name = node_value(
+                        source_file,
+                        function_decl.child_by_field_name("name").unwrap(),
+                    );
 
-                        function_name == function
-                    }) {
+                    function_name == function
+                }) {
                     return Ok(function_node);
                 }
 
@@ -134,7 +143,10 @@ func main() {
 
         assert_eq!(
             GO_SOURCE,
-            node_value(GO_SOURCE, ra.find_correct_node(GO_SOURCE, &tree, None, None).unwrap()),
+            node_value(
+                GO_SOURCE,
+                ra.find_correct_node(GO_SOURCE, &tree, None, None).unwrap()
+            ),
         )
     }
 
@@ -149,7 +161,11 @@ func main() {
 
         assert_eq!(
             target,
-            node_value(GO_SOURCE, ra.find_correct_node(GO_SOURCE, &tree, None, Some("greet")).unwrap()),
+            node_value(
+                GO_SOURCE,
+                ra.find_correct_node(GO_SOURCE, &tree, None, Some("greet"))
+                    .unwrap()
+            ),
         )
     }
 
@@ -164,7 +180,11 @@ func main() {
 
         assert_eq!(
             target,
-            node_value(GO_SOURCE, ra.find_correct_node(GO_SOURCE, &tree, Some("Greeter"), Some("greet")).unwrap()),
+            node_value(
+                GO_SOURCE,
+                ra.find_correct_node(GO_SOURCE, &tree, Some("Greeter"), Some("greet"))
+                    .unwrap()
+            ),
         )
     }
 
@@ -179,7 +199,11 @@ func main() {
 
         assert_eq!(
             target,
-            node_value(GO_SOURCE, ra.find_correct_node(GO_SOURCE, &tree, Some("Greeter"), Some("greetPointer")).unwrap()),
+            node_value(
+                GO_SOURCE,
+                ra.find_correct_node(GO_SOURCE, &tree, Some("Greeter"), Some("greetPointer"))
+                    .unwrap()
+            ),
         )
     }
 }

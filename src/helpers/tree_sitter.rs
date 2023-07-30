@@ -1,5 +1,5 @@
 use tree_sitter::{Language, Node, Tree, TreeCursor};
-use tree_sitter_traversal::{Order, traverse};
+use tree_sitter_traversal::{traverse, Order};
 
 pub fn find_all_of_kind<'a>(cursor: TreeCursor<'a>, kind: &str) -> Vec<Node<'a>> {
     traverse(cursor, Order::Pre)

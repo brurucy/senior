@@ -50,7 +50,7 @@ impl SupportedLanguage for RustAnalyzer {
                 if let Some(correct_parent_impl_node) = candidate_correct_parent_impl_node {
                     cursor = correct_parent_impl_node.walk();
                 } else {
-                    return Err("function parent not found");
+                    return Err("impl block not found");
                 }
             };
 
@@ -134,7 +134,11 @@ fn main() {
 
         assert_eq!(
             RUST_SOURCE,
-            node_value(RUST_SOURCE, ra.find_correct_node(RUST_SOURCE, &tree, None, None).unwrap()),
+            node_value(
+                RUST_SOURCE,
+                ra.find_correct_node(RUST_SOURCE, &tree, None, None)
+                    .unwrap(),
+            ),
         )
     }
 
@@ -149,7 +153,11 @@ fn main() {
 
         assert_eq!(
             target,
-            node_value(RUST_SOURCE, ra.find_correct_node(RUST_SOURCE, &tree, None, Some("greet")).unwrap()),
+            node_value(
+                RUST_SOURCE,
+                ra.find_correct_node(RUST_SOURCE, &tree, None, Some("greet"))
+                    .unwrap(),
+            ),
         )
     }
 
@@ -164,7 +172,11 @@ fn main() {
 
         assert_eq!(
             target,
-            node_value(RUST_SOURCE, ra.find_correct_node(RUST_SOURCE, &tree, Some("Greeter"), Some("greet")).unwrap()),
+            node_value(
+                RUST_SOURCE,
+                ra.find_correct_node(RUST_SOURCE, &tree, Some("Greeter"), Some("greet"))
+                    .unwrap(),
+            ),
         )
     }
 
@@ -179,7 +191,11 @@ fn main() {
 
         assert_eq!(
             target,
-            node_value(RUST_SOURCE, ra.find_correct_node(RUST_SOURCE, &tree, Some("GenericGreeter"), Some("greet")).unwrap()),
+            node_value(
+                RUST_SOURCE,
+                ra.find_correct_node(RUST_SOURCE, &tree, Some("GenericGreeter"), Some("greet"))
+                    .unwrap(),
+            ),
         )
     }
 }

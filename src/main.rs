@@ -1,5 +1,5 @@
 use std::env;
-use std::fs::{OpenOptions, read_to_string};
+use std::fs::{read_to_string, OpenOptions};
 use std::io::Write;
 
 use clap::Parser;
@@ -8,7 +8,7 @@ use inquire::Confirm;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use tree_sitter::Tree;
-use tree_sitter_traversal::{Order, traverse_tree};
+use tree_sitter_traversal::{traverse_tree, Order};
 
 use crate::supported_languages::supported_language::{detect_language, SupportedLanguage};
 
@@ -107,7 +107,9 @@ impl Optimizer {
     }
     fn build(&mut self) -> Result<(), String> {
         self.parser = tree_sitter::Parser::new();
-        self.parser.set_language(self.supported_language.language()).unwrap();
+        self.parser
+            .set_language(self.supported_language.language())
+            .unwrap();
         if let Some(function_name) = &self.function_name {
             if let Some(tree) = self.parser.parse(&self.source_file, None) {
                 let source_bytes = self.source_file.as_bytes();

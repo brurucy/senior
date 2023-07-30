@@ -33,7 +33,7 @@ impl Display for Language {
             Go => "go",
             JavaScript => "javascript",
             Rust => "rust",
-            TypeScript => "typescript"
+            TypeScript => "typescript",
         };
 
         write!(f, "{}", stringified_value)
