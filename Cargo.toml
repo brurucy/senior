@@ -13,6 +13,12 @@ serde_json = "1.0"
 tokio = { version="1.29.1", features = ["full"] }
 tree-sitter = "0.20.10"
 tree-sitter-rust = "0.20.3"
+tree-sitter-go = "0.20.0"
+tree-sitter-javascript = "0.20.0"
+tree-sitter-typescript = "0.20.2"
 tree-sitter-traversal = "0.1.2"
 bat = { version="0.23.0", features = ["git"] }
 inquire = "0.6.2"
+colored = "2.0.4"
+tree-sitter-edit = "0.3.0"
+glob = "0.3.1"
