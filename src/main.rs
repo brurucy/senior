@@ -1,5 +1,5 @@
 use std::env;
-use std::fs::{read_to_string, OpenOptions};
+use std::fs::{OpenOptions, read_to_string};
 use std::io::Write;
 
 use clap::Parser;
@@ -8,7 +8,7 @@ use inquire::Confirm;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use tree_sitter::Tree;
-use tree_sitter_traversal::{traverse_tree, Order};
+use tree_sitter_traversal::{Order, traverse_tree};
 
 use crate::supported_languages::supported_language::{detect_language, SupportedLanguage};
 
@@ -42,7 +42,7 @@ fn draft_instructions(
     add_comments: bool,
     extra_context: &Option<String>,
 ) -> String {
-    let add_comments = if add_comments { "Do" } else { "Do not" };
+    let add_comments = if add_comments { "Do" } else { "Absolutely do not" };
     let task = if let Some(function) = function_name {
         format!(
             "the function named {} contained in the following code:\n {}",
@@ -61,7 +61,7 @@ Strictly adhere to the following instructions:
 1. Do not change the type signature.
 2. Only propose small, incremental changes.
 3. {} add comments.
-4. Respond only with code, and nothing else.
+4. Respond only with code, and no commentary or explanations.
 5. If the code cannot be optimised further, respond with "OPTIMAL"
 {}
 "#,
@@ -271,7 +271,7 @@ async fn main() {
         &if let Some(theme) = args.theme {
             theme
         } else {
-            "visual-studio-dark-plus".to_string()
+            "Dracula".to_string()
         },
         &if let Some(model) = args.model {
             model
