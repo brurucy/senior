@@ -33,34 +33,43 @@ impl SupportedLanguage for RustAnalyzer {
         parent_identifier: &Option<String>,
         function_identifier: &Option<String>,
     ) -> Result<Node<'a>, &'a str> {
-        let mut cursor = root_tree.walk();
+        let cursor = root_tree.walk();
         if let Some(function) = function_identifier {
+            let mut candidate_subtrees = vec![];
             if let Some(parent) = parent_identifier {
                 let all_impls = find_all_of_kind(cursor, "impl_item");
-                let candidate_correct_parent_impl_node = all_impls.into_iter().find(|impl_node| {
-                    let impl_type_node = impl_node.child_by_field_name("type").unwrap();
-                    return if impl_type_node.kind() == "generic_type" {
+                for parent_impl in all_impls.into_iter() {
+                    let impl_type_node = parent_impl.child_by_field_name("type").unwrap();
+                    let impl_type_name = if impl_type_node.kind() == "generic_type" {
                         let type_name_node = impl_type_node.child_by_field_name("type").unwrap();
-                        node_value(source_file, type_name_node) == parent
+                        node_value(source_file, type_name_node)
                     } else {
-                        node_value(source_file, impl_type_node) == parent
+                        node_value(source_file, impl_type_node)
                     };
-                });
 
-                if let Some(correct_parent_impl_node) = candidate_correct_parent_impl_node {
-                    cursor = correct_parent_impl_node.walk();
-                } else {
+                    if impl_type_name == parent {
+                        candidate_subtrees.push(parent_impl.walk())
+                    }
+                }
+
+                if candidate_subtrees.is_empty() {
                     return Err("impl block not found");
                 }
+            } else {
+                candidate_subtrees.push(cursor)
             };
 
-            return if let Some(function_node) = find_first_of_kind_with_field_value(
-                source_file,
-                cursor,
-                "function_item",
-                "name",
-                function,
-            ) {
+            return if let Some(function_node) = candidate_subtrees
+                .into_iter()
+                .find_map(|cursor| {
+                    find_first_of_kind_with_field_value(
+                        source_file,
+                        cursor,
+                        "function_item",
+                        "name",
+                        function,
+                    )
+                }) {
                 Ok(function_node)
             } else {
                 Err("function not found")
@@ -178,9 +187,9 @@ fn main() {
                     RUST_SOURCE,
                     &tree,
                     &Some("Greeter".to_string()),
-                    &Some("greet".to_string())
+                    &Some("greet".to_string()),
                 )
-                .unwrap(),
+                    .unwrap(),
             ),
         )
     }
@@ -202,9 +211,9 @@ fn main() {
                     RUST_SOURCE,
                     &tree,
                     &Some("GenericGreeter".to_string()),
-                    &Some("greet".to_string())
+                    &Some("greet".to_string()),
                 )
-                .unwrap(),
+                    .unwrap(),
             ),
         )
     }

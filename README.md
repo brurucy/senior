@@ -26,3 +26,16 @@ The only requirement is that you must have an environment variable named `OPENAI
 | Go         | X          | X        | X      | Untested with Generics. Most likely works.                                                                                              |
 | Javascript | X          | X        | X      | Does not work with functions inside object literals<br/>nor anonymous functions declared inside classes (you shouldn't do that anyways) |
 | Typescript | X          | X        | X      | Does not work with functions inside object literals<br/>nor anonymous functions declared inside classes (you shouldn't do that anyways) |
+
+### Contributing
+
+In case you would like to either improve support for a language, or add one altogether, do not worry, as I've written
+`senior` in such a way that it should be pretty easy to do so. First, fork it, then, add a new language
+under `supported_languages` and follow what has been done for the other languages.
+
+### Roadmap
+
+1. Leverage `tree-sitter`'s capabilities to create a code `context`. For instance, if method A of class X is to be
+   optimised, and there are other function or method calls inside A, then provide class X, and all constituent functions
+   inside A as a context.
+2. Java and Python support

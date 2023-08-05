@@ -17,7 +17,8 @@ pub fn find_first_of_kind_with_field_value<'a>(
     traverse(cursor, Order::Pre).find(|node| {
         if node.kind() == kind {
             if let Some(child) = node.child_by_field_name(field) {
-                if node_value(source, child) == value {
+                let nval = node_value(source, child);
+                if nval == value {
                     return true;
                 }
             }
