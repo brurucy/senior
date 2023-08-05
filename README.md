@@ -1,8 +1,25 @@
-## Senior
+# Senior
+
+[![crates.io](https://img.shields.io/crates/v/senior.svg)](https://crates.io/crates/senior)
+[![docs](https://docs.rs/senior/badge.svg)](https://docs.rs/senior)
 
 Instead of bothering **a** senior engineer for suggestions on how to improve your code, **ask senior instead**!
 
-### Intro
+![demo](./demo.gif)
+
+## How to install
+
+```
+brew install senior
+```
+
+or
+
+```
+cargo install senior
+```
+
+## Intro
 
 Senior uses LLMs(at the moment only openAI ones however) and an advance source code parsing library, `tree-sitter`, to,
 from the comfort of your terminal, suggest improvements to your code.
@@ -18,7 +35,7 @@ be overwritten with the suggestion.
 
 The only requirement is that you must have an environment variable named `OPENAI_API_KEY` with your very own token.
 
-### Language support
+## Language support
 
 | Language   | Whole File | Function | Method | Limitations                                                                                                                             |
 |------------|------------|----------|--------|-----------------------------------------------------------------------------------------------------------------------------------------|
@@ -27,13 +44,13 @@ The only requirement is that you must have an environment variable named `OPENAI
 | Javascript | X          | X        | X      | Does not work with functions inside object literals<br/>nor anonymous functions declared inside classes (you shouldn't do that anyways) |
 | Typescript | X          | X        | X      | Does not work with functions inside object literals<br/>nor anonymous functions declared inside classes (you shouldn't do that anyways) |
 
-### Contributing
+## Contributing
 
 In case you would like to either improve support for a language, or add one altogether, do not worry, as I've written
 `senior` in such a way that it should be pretty easy to do so. First, fork it, then, add a new language
 under `supported_languages` and follow what has been done for the other languages.
 
-### Roadmap
+## Roadmap
 
 1. Leverage `tree-sitter`'s capabilities to create a code `context`. For instance, if method A of class X is to be
    optimised, and there are other function or method calls inside A, then provide class X, and all constituent functions
