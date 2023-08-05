@@ -14,8 +14,8 @@ pub trait SupportedLanguage: Display {
         &self,
         source_file: &str,
         root_tree: &'a Tree,
-        parent_identifier: Option<&str>,
-        function_identifier: Option<&str>,
+        parent_identifier: &Option<String>,
+        function_identifier: &Option<String>,
     ) -> Result<Node<'a>, &'a str>;
     fn language(&self) -> tree_sitter::Language;
 }

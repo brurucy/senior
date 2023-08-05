@@ -30,8 +30,8 @@ impl SupportedLanguage for RustAnalyzer {
         &self,
         source_file: &str,
         root_tree: &'a Tree,
-        parent_identifier: Option<&str>,
-        function_identifier: Option<&str>,
+        parent_identifier: &Option<String>,
+        function_identifier: &Option<String>,
     ) -> Result<Node<'a>, &'a str> {
         let mut cursor = root_tree.walk();
         if let Some(function) = function_identifier {
@@ -136,7 +136,7 @@ fn main() {
             RUST_SOURCE,
             node_value(
                 RUST_SOURCE,
-                ra.find_correct_node(RUST_SOURCE, &tree, None, None)
+                ra.find_correct_node(RUST_SOURCE, &tree, &None, &None)
                     .unwrap(),
             ),
         )
@@ -155,7 +155,7 @@ fn main() {
             target,
             node_value(
                 RUST_SOURCE,
-                ra.find_correct_node(RUST_SOURCE, &tree, None, Some("greet"))
+                ra.find_correct_node(RUST_SOURCE, &tree, &None, &Some("greet".to_string()))
                     .unwrap(),
             ),
         )
@@ -174,8 +174,13 @@ fn main() {
             target,
             node_value(
                 RUST_SOURCE,
-                ra.find_correct_node(RUST_SOURCE, &tree, Some("Greeter"), Some("greet"))
-                    .unwrap(),
+                ra.find_correct_node(
+                    RUST_SOURCE,
+                    &tree,
+                    &Some("Greeter".to_string()),
+                    &Some("greet".to_string())
+                )
+                .unwrap(),
             ),
         )
     }
@@ -193,8 +198,13 @@ fn main() {
             target,
             node_value(
                 RUST_SOURCE,
-                ra.find_correct_node(RUST_SOURCE, &tree, Some("GenericGreeter"), Some("greet"))
-                    .unwrap(),
+                ra.find_correct_node(
+                    RUST_SOURCE,
+                    &tree,
+                    &Some("GenericGreeter".to_string()),
+                    &Some("greet".to_string())
+                )
+                .unwrap(),
             ),
         )
     }

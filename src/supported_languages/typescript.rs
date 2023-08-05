@@ -30,8 +30,8 @@ impl SupportedLanguage for TypescriptAnalyser {
         &self,
         source_file: &str,
         root_tree: &'a Tree,
-        parent_identifier: Option<&str>,
-        function_identifier: Option<&str>,
+        parent_identifier: &Option<String>,
+        function_identifier: &Option<String>,
     ) -> Result<Node<'a>, &'a str> {
         if let Some(function) = function_identifier {
             if let Some(parent) = parent_identifier {
@@ -177,7 +177,7 @@ greeter.asyncGreet();"#;
             TYPESCRIPT_SOURCE,
             node_value(
                 TYPESCRIPT_SOURCE,
-                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, None, None)
+                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, &None, &None)
                     .unwrap(),
             ),
         )
@@ -196,7 +196,7 @@ greeter.asyncGreet();"#;
             target,
             node_value(
                 TYPESCRIPT_SOURCE,
-                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, None, Some("greet"))
+                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, &None, &Some("greet".to_string()))
                     .unwrap(),
             ),
         )
@@ -215,8 +215,13 @@ greeter.asyncGreet();"#;
             target,
             node_value(
                 TYPESCRIPT_SOURCE,
-                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, None, Some("asyncGreet"))
-                    .unwrap(),
+                ra.find_correct_node(
+                    TYPESCRIPT_SOURCE,
+                    &tree,
+                    &None,
+                    &Some("asyncGreet".to_string())
+                )
+                .unwrap(),
             ),
         )
     }
@@ -234,8 +239,13 @@ greeter.asyncGreet();"#;
             target,
             node_value(
                 TYPESCRIPT_SOURCE,
-                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, None, Some("greetExpression"))
-                    .unwrap(),
+                ra.find_correct_node(
+                    TYPESCRIPT_SOURCE,
+                    &tree,
+                    &None,
+                    &Some("greetExpression".to_string())
+                )
+                .unwrap(),
             ),
         )
     }
@@ -253,8 +263,13 @@ greeter.asyncGreet();"#;
             target,
             node_value(
                 TYPESCRIPT_SOURCE,
-                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, None, Some("asyncGreetExpression"))
-                    .unwrap(),
+                ra.find_correct_node(
+                    TYPESCRIPT_SOURCE,
+                    &tree,
+                    &None,
+                    &Some("asyncGreetExpression".to_string())
+                )
+                .unwrap(),
             ),
         )
     }
@@ -272,8 +287,13 @@ greeter.asyncGreet();"#;
             target,
             node_value(
                 TYPESCRIPT_SOURCE,
-                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, None, Some("greetArrow"))
-                    .unwrap(),
+                ra.find_correct_node(
+                    TYPESCRIPT_SOURCE,
+                    &tree,
+                    &None,
+                    &Some("greetArrow".to_string())
+                )
+                .unwrap(),
             ),
         )
     }
@@ -291,8 +311,13 @@ greeter.asyncGreet();"#;
             target,
             node_value(
                 TYPESCRIPT_SOURCE,
-                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, None, Some("asyncGreetArrow"))
-                    .unwrap(),
+                ra.find_correct_node(
+                    TYPESCRIPT_SOURCE,
+                    &tree,
+                    &None,
+                    &Some("asyncGreetArrow".to_string())
+                )
+                .unwrap(),
             ),
         )
     }
@@ -310,8 +335,13 @@ greeter.asyncGreet();"#;
             target,
             node_value(
                 TYPESCRIPT_SOURCE,
-                ra.find_correct_node(TYPESCRIPT_SOURCE, &tree, Some("Greeter"), Some("greet"))
-                    .unwrap(),
+                ra.find_correct_node(
+                    TYPESCRIPT_SOURCE,
+                    &tree,
+                    &Some("Greeter".to_string()),
+                    &Some("greet".to_string())
+                )
+                .unwrap(),
             ),
         )
     }
@@ -332,10 +362,10 @@ greeter.asyncGreet();"#;
                 ra.find_correct_node(
                     TYPESCRIPT_SOURCE,
                     &tree,
-                    Some("Greeter"),
-                    Some("asyncGreet"),
+                    &Some("Greeter".to_string()),
+                    &Some("asyncGreet".to_string()),
                 )
-                    .unwrap(),
+                .unwrap(),
             ),
         )
     }

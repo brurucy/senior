@@ -9,9 +9,9 @@ from the comfort of your terminal, suggest improvements to your code.
 
 As an argument to the cli, you can give:
 
-1. A path to a file <required>
-2. A path to a file <required> alongside a function name <optional>
-3. A path to a file <required> with a class/struct/parent element <optional> and a function name <optional>
+1. A path to a file
+2. A path to a file alongside a function name
+3. A path to a file with a class/struct/parent element and a function name
 
 In return, you will be prompted with an improved version. If you accept it, by pressing y, then the original file will
 be overwritten with the suggestion.
@@ -20,9 +20,9 @@ The only requirement is that you must have an environment variable named `OPENAI
 
 ### Language support
 
-| Language   | Whole File | Function | Method | Limitations                                                                                                                                  |
-|------------|------------|----------|--------|----------------------------------------------------------------------------------------------------------------------------------------------|
-| Rust       | X          | X        | X      |                                                                                                                                              |
-| Go         | X          | X        | X      | Untested with Generics. Most likely works.                                                                                                   |
-| Javascript | X          | X        | X      | Does not work with functions inside object literals<br/>nor anonymous <br/>functions declared inside classes (you shouldn't do that anyways) |
-| Typescript | X          | X        | X      | Does not work with functions inside object literals<br/>nor anonymous <br/>functions declared inside classes (you shouldn't do that anyways) |
+| Language   | Whole File | Function | Method | Limitations                                                                                                                             |
+|------------|------------|----------|--------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| Rust       | X          | X        | X      |                                                                                                                                         |
+| Go         | X          | X        | X      | Untested with Generics. Most likely works.                                                                                              |
+| Javascript | X          | X        | X      | Does not work with functions inside object literals<br/>nor anonymous functions declared inside classes (you shouldn't do that anyways) |
+| Typescript | X          | X        | X      | Does not work with functions inside object literals<br/>nor anonymous functions declared inside classes (you shouldn't do that anyways) |

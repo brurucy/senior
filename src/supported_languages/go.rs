@@ -28,8 +28,8 @@ impl SupportedLanguage for GoAnalyser {
         &self,
         source_file: &str,
         root_tree: &'a Tree,
-        parent_identifier: Option<&str>,
-        function_identifier: Option<&str>,
+        parent_identifier: &Option<String>,
+        function_identifier: &Option<String>,
     ) -> Result<Node<'a>, &'a str> {
         if let Some(function) = function_identifier {
             return if let Some(parent) = parent_identifier {
@@ -145,7 +145,8 @@ func main() {
             GO_SOURCE,
             node_value(
                 GO_SOURCE,
-                ra.find_correct_node(GO_SOURCE, &tree, None, None).unwrap()
+                ra.find_correct_node(GO_SOURCE, &tree, &None, &None)
+                    .unwrap(),
             ),
         )
     }
@@ -163,8 +164,8 @@ func main() {
             target,
             node_value(
                 GO_SOURCE,
-                ra.find_correct_node(GO_SOURCE, &tree, None, Some("greet"))
-                    .unwrap()
+                ra.find_correct_node(GO_SOURCE, &tree, &None, &Some("greet".to_string()))
+                    .unwrap(),
             ),
         )
     }
@@ -182,8 +183,13 @@ func main() {
             target,
             node_value(
                 GO_SOURCE,
-                ra.find_correct_node(GO_SOURCE, &tree, Some("Greeter"), Some("greet"))
-                    .unwrap()
+                ra.find_correct_node(
+                    GO_SOURCE,
+                    &tree,
+                    &Some("Greeter".to_string()),
+                    &Some("greet".to_string())
+                )
+                .unwrap(),
             ),
         )
     }
@@ -201,8 +207,13 @@ func main() {
             target,
             node_value(
                 GO_SOURCE,
-                ra.find_correct_node(GO_SOURCE, &tree, Some("Greeter"), Some("greetPointer"))
-                    .unwrap()
+                ra.find_correct_node(
+                    GO_SOURCE,
+                    &tree,
+                    &Some("Greeter".to_string()),
+                    &Some("greetPointer".to_string())
+                )
+                .unwrap(),
             ),
         )
     }

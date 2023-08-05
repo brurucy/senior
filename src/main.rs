@@ -8,8 +8,8 @@ use inquire::Confirm;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use tree_sitter::Tree;
-use tree_sitter_traversal::{Order, traverse_tree};
 
+use crate::helpers::tree_sitter::node_value;
 use crate::supported_languages::supported_language::{detect_language, SupportedLanguage};
 
 mod helpers;
@@ -42,7 +42,11 @@ fn draft_instructions(
     add_comments: bool,
     extra_context: &Option<String>,
 ) -> String {
-    let add_comments = if add_comments { "Do" } else { "Absolutely do not" };
+    let add_comments = if add_comments {
+        "Do"
+    } else {
+        "Absolutely do not"
+    };
     let task = if let Some(function) = function_name {
         format!(
             "the function named {} contained in the following code:\n {}",
@@ -80,7 +84,7 @@ impl Optimizer {
         file_name: &str,
         parent_element: Option<String>,
         function_name: Option<String>,
-        optional_context: Option<String>,
+        extra_context: Option<String>,
         theme: &str,
         model: &str,
         dry_run: bool,
@@ -90,11 +94,11 @@ impl Optimizer {
         return Self {
             supported_language: detect_language(file_name).unwrap(),
             file_name: file_name.to_string(),
-            parent_element: parent_element.map(|parent| parent.to_string()),
-            function_name: function_name.map(|function| function.to_string()),
-            source_file: read_to_string(file_name).unwrap(),
             code: "".to_string(),
-            extra_context: optional_context.map(|context| context.to_string()),
+            parent_element,
+            function_name,
+            source_file: read_to_string(file_name).unwrap(),
+            extra_context,
             model: model.to_string(),
             theme: theme.to_string(),
             dry_run,
@@ -110,31 +114,14 @@ impl Optimizer {
         self.parser
             .set_language(self.supported_language.language())
             .unwrap();
-        if let Some(function_name) = &self.function_name {
-            if let Some(tree) = self.parser.parse(&self.source_file, None) {
-                let source_bytes = self.source_file.as_bytes();
-                if let Some(node) = traverse_tree(&tree, Order::Pre).find(|node| {
-                    let node_kind = node.kind();
-                    if node_kind == "function_item" {
-                        let node_function_name = node.child_by_field_name("name").unwrap();
-                        return node_function_name.utf8_text(&source_bytes).unwrap()
-                            == function_name;
-                    }
 
-                    return false;
-                }) {
-                    self.function_node_id = node.id();
-                    self.tree = Some(tree.clone());
-                    self.code = node.utf8_text(source_bytes).unwrap().to_string();
-                } else {
-                    return Err(format!("failed to find function: {}", function_name));
-                }
-            } else {
-                return Err(String::from("failed to parse source file"));
-            }
+        if let Some(tree) = self.parser.parse(&self.source_file, None) {
+            self.tree = Some(tree);
+
+            Ok(())
+        } else {
+            Err(String::from("failed to parse source file"))
         }
-
-        Ok(())
     }
 }
 
@@ -162,7 +149,7 @@ struct OpenAIChatResponse {
 
 fn do_render(tree: &Tree, src: &str, editor: &impl tree_sitter_edit::Editor) -> Vec<u8> {
     let mut v: Vec<u8> = Vec::new();
-    tree_sitter_edit::render(&mut v, tree, src.as_bytes(), editor).expect("I/O error on a vector?");
+    tree_sitter_edit::render(&mut v, tree, src.as_bytes(), editor).unwrap();
     v
 }
 
@@ -170,6 +157,23 @@ impl Optimizer {
     async fn optimise(&mut self, secret: &str) -> Result<String, String> {
         let client = reqwest::Client::new();
         let model = self.model.clone();
+        let node = self.supported_language.find_correct_node(
+            &self.source_file,
+            self.tree.as_ref().unwrap(),
+            &self.parent_element,
+            &self.function_name,
+        );
+        match node {
+            Ok(function_node) => {
+                self.code = node_value(&self.source_file, function_node).to_string();
+                self.function_node_id = function_node.id();
+            }
+            // :D code gore
+            Err(e) => {
+                return Err(e.to_string());
+            }
+        }
+
         let body = OpenAIChatRequest {
             model,
             messages: vec![Message {
@@ -200,14 +204,14 @@ impl Optimizer {
             Err(e) => Err(e.to_string()),
         }
     }
-    fn edit_source_file(&mut self, suggestion: &[u8]) -> String {
+    fn apply_suggestion_to_source_file(&mut self, suggestion: &[u8]) -> String {
         let editor = tree_sitter_edit::Replace {
             id: tree_sitter_edit::NodeId {
                 id: self.function_node_id,
             },
             bytes: suggestion.to_vec(),
         };
-        let r = do_render(&self.tree.clone().unwrap(), &self.source_file, &editor);
+        let r = do_render(self.tree.as_ref().unwrap(), &self.source_file, &editor);
 
         String::from_utf8(r).unwrap()
     }
@@ -217,17 +221,17 @@ impl Optimizer {
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// Location of the source code file
-    #[arg(short, long)]
-    file_location: String,
+    #[arg()]
+    file_path: String,
+
+    /// Name of the function or method that will be searched for in the file at the given file_path
+    #[arg(short = 'f', long)]
+    function_identifier: Option<String>,
 
     /// Parent syntactic element(Class, struct, ... etc) of the function to be optimised. If not given
     /// then the first function with function_name argument as identifier will be picked up
-    #[arg(short, long)]
-    parent: Option<String>,
-
-    /// Name of the function that will be searched for in the file at the given file_location
-    #[arg(long)]
-    function_name: Option<String>,
+    #[arg(short = 'p', long)]
+    parent_identifier: Option<String>,
 
     /// The OpenAI model. Check out https://platform.openai.com/docs/models/overview
     #[arg(short, long)]
@@ -264,9 +268,9 @@ async fn main() {
     };
 
     let mut opt = Optimizer::new(
-        &args.file_location,
-        args.parent,
-        args.function_name,
+        &args.file_path,
+        args.parent_identifier,
+        args.function_identifier,
         args.extra_context,
         &if let Some(theme) = args.theme {
             theme
@@ -301,15 +305,16 @@ async fn main() {
                     .print()
                     .unwrap();
 
-                if !opt.skip_prompt {
-                    Confirm::new("Apply suggestion?")
-                        .with_default(false)
-                        .prompt()
-                        .unwrap();
-                }
-
                 if !opt.dry_run {
-                    let edited_file = opt.edit_source_file(suggestion.as_bytes());
+                    let mut overwrite_file = true;
+                    if !opt.skip_prompt {
+                        overwrite_file = Confirm::new("Apply suggestion?")
+                            .with_default(false)
+                            .prompt()
+                            .unwrap();
+                    }
+
+                    let edited_file = opt.apply_suggestion_to_source_file(suggestion.as_bytes());
                     let file = OpenOptions::new()
                         .write(true)
                         .truncate(true)
