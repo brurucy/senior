@@ -312,20 +312,20 @@ async fn main() {
                             .with_default(false)
                             .prompt()
                             .unwrap();
-                        if overwrite_file {
-                            let edited_file = opt.apply_suggestion_to_source_file(suggestion.as_bytes());
-                            let file = OpenOptions::new()
-                                .write(true)
-                                .truncate(true)
-                                .open(opt.file_name);
-                            match file {
-                                Ok(mut opened_file) => {
-                                    if let Err(e) = opened_file.write(edited_file.as_bytes()) {
-                                        panic!("{}", e.to_string().red())
-                                    }
+                    }
+                    if overwrite_file {
+                        let edited_file = opt.apply_suggestion_to_source_file(suggestion.as_bytes());
+                        let file = OpenOptions::new()
+                            .write(true)
+                            .truncate(true)
+                            .open(opt.file_name);
+                        match file {
+                            Ok(mut opened_file) => {
+                                if let Err(e) = opened_file.write(edited_file.as_bytes()) {
+                                    panic!("{}", e.to_string().red())
                                 }
-                                Err(e) => panic!("{}", e.to_string().red()),
                             }
+                            Err(e) => panic!("{}", e.to_string().red()),
                         }
                     }
                 }
