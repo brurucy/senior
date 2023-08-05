@@ -2,22 +2,29 @@
 name = "senior"
 version = "0.1.0"
 edition = "2021"
+documentation = "https://docs.rs/senior/"
+repository = "https://github.com/brurucy/senior"
+license = "Apache-2.0 OR MIT"
+description = "A cli that summons an llm suggest improvements to given code"
+keywords = ["senior", "cli", "terminal", "llm"]
+categories = ["command-line-utilities"]
+readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 reqwest = { version = "0.11.18", features = ["json"] }
 clap = { version = "4.3.12", features = ["derive"] }
-serde = { version = "1.0.167", features = ["derive"]}
+serde = { version = "1.0.167", features = ["derive"] }
 serde_json = "1.0"
-tokio = { version="1.29.1", features = ["full"] }
+tokio = { version = "1.29.1", features = ["full"] }
 tree-sitter = "0.20.10"
 tree-sitter-rust = "0.20.3"
 tree-sitter-go = "0.20.0"
 tree-sitter-javascript = "0.20.0"
 tree-sitter-typescript = "0.20.2"
 tree-sitter-traversal = "0.1.2"
-bat = { version="0.23.0", features = ["git"] }
+bat = { version = "0.23.0", features = ["git"] }
 inquire = "0.6.2"
 colored = "2.0.4"
 tree-sitter-edit = "0.3.0"
