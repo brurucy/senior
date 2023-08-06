@@ -18,10 +18,10 @@ Requires:
 cargo install senior
 ```
 
-or (**not yet**)
+or
 
 ```
-brew install senior
+brew install brurucy/homebrew-senior/senior
 ```
 
 ## Intro
