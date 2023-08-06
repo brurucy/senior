@@ -3,7 +3,7 @@
 [![crates.io](https://img.shields.io/crates/v/senior.svg)](https://crates.io/crates/senior)
 [![docs](https://docs.rs/senior/badge.svg)](https://docs.rs/senior)
 
-Instead of bothering **a** senior engineer for suggestions on how to improve your code, **ask senior instead**!
+Are all senior engineers busy? **Ask senior instead**!
 
 ![demo](./demo.gif)
 
