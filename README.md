@@ -10,13 +10,13 @@ Instead of bothering **a** senior engineer for suggestions on how to improve you
 ## How to install
 
 ```
-brew install senior
-```
-
-or
-
-```
 cargo install senior
+```
+
+or (**not yet**)
+
+```
+brew install senior
 ```
 
 ## Intro
