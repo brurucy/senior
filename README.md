@@ -9,6 +9,11 @@ Instead of bothering **a** senior engineer for suggestions on how to improve you
 
 ## How to install
 
+Requires:
+- openssl
+- a openAI api token
+- rust
+
 ```
 cargo install senior
 ```
